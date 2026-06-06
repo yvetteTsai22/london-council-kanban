@@ -1,8 +1,53 @@
-*, *::before, *::after {
-  box-sizing: border-box;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #2F6FEB;
+  --accent-light: #EBF1FD;
+  --accent-hover: #1a5fd4;
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --border: #E5E7EB;
+  --border-light: #F3F4F6;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --priority-high: #EF4444;
+  --priority-medium: #F59E0B;
+  --priority-low: #22C55E;
+  --sidebar-width: 240px;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 32px;
+  overflow-x: auto;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
 }

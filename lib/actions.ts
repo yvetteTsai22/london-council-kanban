@@ -14,20 +14,27 @@ export async function createTicket(formData: FormData) {
   const assigneeId = formData.get('assigneeId') ? Number(formData.get('assigneeId')) : null
   const dueDate = (formData.get('dueDate') as string) || null
 
-  const existing = await db.select({ ref: tickets.ref }).from(tickets)
-  const nums = existing.map(t => parseInt(t.ref.split('-')[1])).filter(n => !isNaN(n))
-  const nextNum = nums.length > 0 ? Math.max(...nums) + 1 : 1
-  const ref = `LCI-${String(nextNum).padStart(3, '0')}`
+  if (!title?.trim() || !priority || !department) {
+    throw new Error('title, priority, and department are required')
+  }
 
-  const [ticket] = await db.insert(tickets).values({
-    ref, title, description, priority, department, assigneeId, dueDate, status: 'new',
-  }).returning()
+  const ticket = await db.transaction(async (tx) => {
+    const [{ maxNum }] = await tx.select({ maxNum: max(tickets.id) }).from(tickets)
+    const nextNum = (maxNum ?? 0) + 1
+    const ref = `LCI-${String(nextNum).padStart(3, '0')}`
 
-  const [{ maxPos }] = await db.select({ maxPos: max(boardOrder.position) }).from(boardOrder)
-  await db.insert(boardOrder).values({ ticketId: ticket.id, position: (maxPos ?? -1) + 1 })
+    const [created] = await tx.insert(tickets).values({
+      ref, title: title.trim(), description, priority, department, assigneeId, dueDate, status: 'new',
+    }).returning()
 
-  await db.insert(activityLog).values({
-    ticketId: ticket.id, action: 'created', actorName: 'Council Officer',
+    const [{ maxPos }] = await tx.select({ maxPos: max(boardOrder.position) }).from(boardOrder)
+    await tx.insert(boardOrder).values({ ticketId: created.id, position: (maxPos ?? -1) + 1 })
+
+    await tx.insert(activityLog).values({
+      ticketId: created.id, action: 'created', actorName: 'Council Officer',
+    })
+
+    return created
   })
 
   revalidatePath('/')

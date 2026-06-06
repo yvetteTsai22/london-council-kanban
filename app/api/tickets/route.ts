@@ -24,15 +24,21 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
-  await db.update(tickets)
-    .set({ status: newStatus, updatedAt: new Date() })
-    .where(eq(tickets.id, ticketId))
+  try {
+    await db.transaction(async (tx) => {
+      await tx.update(tickets)
+        .set({ status: newStatus, updatedAt: new Date() })
+        .where(eq(tickets.id, ticketId))
 
-  await Promise.all(
-    positions.map(({ ticketId: tid, position }) =>
-      db.update(boardOrder).set({ position }).where(eq(boardOrder.ticketId, tid))
-    )
-  )
+      await Promise.all(
+        positions.map(({ ticketId: tid, position }) =>
+          tx.update(boardOrder).set({ position }).where(eq(boardOrder.ticketId, tid))
+        )
+      )
+    })
+  } catch {
+    return NextResponse.json({ error: 'Failed to update ticket' }, { status: 500 })
+  }
 
   revalidatePath('/board')
   return NextResponse.json({ success: true })

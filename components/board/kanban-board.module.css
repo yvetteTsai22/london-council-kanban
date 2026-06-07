@@ -3,48 +3,59 @@
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 28px;
 }
 
 .search {
   flex: 1;
   max-width: 320px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
   background: var(--surface);
-  color: var(--text-primary);
+  color: var(--ink);
+  font-size: 14px;
   outline: none;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
 }
 
-.search:focus { border-color: var(--accent); }
+.search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+}
 
 .filter {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
   background: var(--surface);
-  color: var(--text-primary);
+  color: var(--ink);
+  font-size: 14px;
   outline: none;
+  transition: border-color 0.15s var(--ease);
 }
+
+.filter:focus { border-color: var(--accent); }
 
 .createBtn {
   margin-left: auto;
-  padding: 8px 16px;
+  padding: 8px 20px;
   background: var(--accent);
   color: white;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-pill);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  transition: background 0.15s var(--ease);
 }
 
 .createBtn:hover { background: var(--accent-hover); }
 
 .board {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   overflow-x: auto;
   padding-bottom: 24px;
   align-items: flex-start;

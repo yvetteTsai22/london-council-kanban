@@ -1,14 +1,18 @@
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
   cursor: grab;
   user-select: none;
-  transition: box-shadow 0.15s, opacity 0.15s;
+  transition: box-shadow 0.15s var(--ease), opacity 0.15s var(--ease);
+  box-shadow: var(--shadow);
 }
 
-.card:hover { box-shadow: var(--shadow); }
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .card:active { cursor: grabbing; }
 .dragging { opacity: 0.4; }
 
@@ -16,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .ref {
@@ -24,27 +28,29 @@
   font-weight: 600;
   color: var(--accent);
   font-family: monospace;
+  letter-spacing: 0.04em;
 }
 
 .priority {
   display: inline-flex;
   align-items: center;
   font-size: 11px;
-  font-weight: 500;
-  padding: 2px 6px;
-  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
 }
 
-.priorityHigh { background: #FEE2E2; color: var(--priority-high); }
-.priorityMedium { background: #FEF3C7; color: var(--priority-medium); }
-.priorityLow { background: #DCFCE7; color: var(--priority-low); }
+.priorityHigh { background: #fee2e2; color: var(--priority-high); }
+.priorityMedium { background: #fef3c7; color: var(--priority-medium); }
+.priorityLow { background: #d1fae5; color: var(--priority-low); }
 
 .title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--ink);
   line-height: 1.4;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .footer {
@@ -55,7 +61,10 @@
 
 .dept {
   font-size: 11px;
-  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-soft);
 }
 
 .meta {
@@ -67,7 +76,7 @@
 .avatar {
   width: 22px;
   height: 22px;
-  border-radius: 50%;
+  border-radius: var(--r-pill);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,7 +87,7 @@
 
 .due {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--muted);
 }
 
 .dueSoon { color: var(--priority-high); }

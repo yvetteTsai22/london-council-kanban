@@ -8,6 +8,13 @@
       "when": 1780761741789,
       "tag": "0000_windy_tarot",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780820069158,
+      "tag": "0001_military_calypso",
+      "breakpoints": true
     }
   ]
 }

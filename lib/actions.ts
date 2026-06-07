@@ -2,9 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
-import { tickets, comments, activityLog, boardOrder, teamMembers } from '@/db/schema'
-import { eq, max, desc } from 'drizzle-orm'
+import { tickets, comments, activityLog, teamMembers } from '@/db/schema'
+import { eq, desc } from 'drizzle-orm'
 import type { TicketStatus, TicketPriority } from '@/db/schema'
+import { createTicketRecord } from '@/lib/db/tickets'
+import { fireWebhooks } from '@/lib/webhooks'
 
 export async function createTicket(formData: FormData) {
   const title = formData.get('title') as string
@@ -18,24 +20,8 @@ export async function createTicket(formData: FormData) {
     throw new Error('title, priority, and department are required')
   }
 
-  const ticket = await db.transaction(async (tx) => {
-    const [{ maxNum }] = await tx.select({ maxNum: max(tickets.id) }).from(tickets)
-    const nextNum = (maxNum ?? 0) + 1
-    const ref = `LCI-${String(nextNum).padStart(3, '0')}`
-
-    const [created] = await tx.insert(tickets).values({
-      ref, title: title.trim(), description, priority, department, assigneeId, dueDate, status: 'new',
-    }).returning()
-
-    const [{ maxPos }] = await tx.select({ maxPos: max(boardOrder.position) }).from(boardOrder)
-    await tx.insert(boardOrder).values({ ticketId: created.id, position: (maxPos ?? -1) + 1 })
-
-    await tx.insert(activityLog).values({
-      ticketId: created.id, action: 'created', actorName: 'Council Officer',
-    })
-
-    return created
-  })
+  const ticket = await createTicketRecord({ title, description, priority, department, assigneeId, dueDate })
+  fireWebhooks('ticket.created', ticket)
 
   revalidatePath('/')
   revalidatePath('/board')
@@ -61,6 +47,9 @@ export async function updateTicket(ticketId: number, updates: {
       action: `moved to ${updates.status.replace('_', ' ')}`,
       actorName: 'Council Officer',
     })
+    fireWebhooks('ticket.status_changed', ticket)
+  } else {
+    fireWebhooks('ticket.updated', ticket)
   }
 
   revalidatePath('/')
@@ -76,6 +65,8 @@ export async function addComment(ticketId: number, body: string) {
   await db.insert(activityLog).values({
     ticketId, action: 'added a comment', actorName: 'Council Officer',
   })
+
+  fireWebhooks('ticket.comment_added', { ticketId, comment })
 
   revalidatePath('/board')
   return comment

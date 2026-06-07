@@ -1,5 +1,5 @@
 import {
-  pgTable, pgEnum, serial, text, integer, date, timestamp
+  pgTable, pgEnum, serial, text, integer, date, timestamp, boolean
 } from 'drizzle-orm/pg-core'
 
 export const statusEnum = pgEnum('ticket_status', [
@@ -57,3 +57,13 @@ export type Ticket = typeof tickets.$inferSelect
 export type TeamMember = typeof teamMembers.$inferSelect
 export type Comment = typeof comments.$inferSelect
 export type ActivityEntry = typeof activityLog.$inferSelect
+
+export const webhooks = pgTable('webhooks', {
+  id: serial('id').primaryKey(),
+  url: text('url').notNull(),
+  events: text('events').array().notNull(),
+  active: boolean('active').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export type Webhook = typeof webhooks.$inferSelect
